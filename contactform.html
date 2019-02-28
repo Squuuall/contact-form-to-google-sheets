@@ -1,0 +1,113 @@
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+		function submit_form() {    
+	// Check Fields
+    var complete = true;
+	var error_color = '#FFD9D9';
+	// For var fields we need to add each ID that we want to put into the google sheet.
+	// This will be the same as the ID list from below for each input.
+	// The order of the IDs in the array determines the layout for the sheet
+    var fields = ['first_name','email','phone', 'front-page-form-select'];
+    var row = '';
+    var i;
+    for(i=0; i < fields.length; ++i) {
+        var field = fields[i];
+        $('#'+field).css('backgroundColor', 'ivory');
+        var value = $('#'+field).val();       
+	    // Validate Field
+        if(!value) {
+            if(field != 'message') {
+                $('#'+field).css('backgroundColor', error_color);
+                var complete = false;
+            }
+            } else {            
+			// Sheet Data
+            row += '"'+value+'",';
+        }
+    }
+   
+    // Submission
+    if(complete) {		
+		// Clean Row
+		row = row.slice(0, -1);		
+        // Config
+        var gs_sid = ''; // Enter your Google Sheet ID here
+        var gs_clid = ''; // Enter your API Client ID here
+        var gs_clis = ''; // Enter your API Client Secret here
+        var gs_rtok = ''; // Enter your OAuth Refresh Token here
+        var gs_atok = false;
+        var gs_url = 'https://sheets.googleapis.com/v4/spreadsheets/'+gs_sid+'/values/A1:append?includeValuesInResponse=false&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=USER_ENTERED';
+        var gs_body = '{"majorDimension":"ROWS", "values":[['+row+']]}';        
+         // HTTP Request Token Refresh
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://www.googleapis.com/oauth2/v4/token?client_id='+gs_clid+'&client_secret='+gs_clis+'&refresh_token='+gs_rtok+'&grant_type=refresh_token');
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {            
+            var response = JSON.parse(xhr.responseText);
+            var gs_atok = response.access_token;            
+			// HTTP Request Append Data
+            if(gs_atok) {
+                var xxhr = new XMLHttpRequest();
+                xxhr.open('POST', gs_url);
+                xxhr.setRequestHeader('Content-length', gs_body.length);
+                xxhr.setRequestHeader('Content-type', 'application/json');
+                xxhr.setRequestHeader('Authorization', 'OAuth ' + gs_atok );
+                xxhr.onload = function() {
+					if(xxhr.status == 200) {
+						// Success
+						$('#message').html('<p>Row Added to Sheet | <a href="http://snydergroupinc.com/tutorials/tutorial-google-sheets-api.php">Add Another &raquo;</a></p><p>Response:<br/>'+xxhr.responseText+'</p>');
+						} else {
+						// Fail
+						$('#message').html('<p>Row Not Added</p><p>Response:<br/>'+xxhr.responseText+'</p>');
+					}
+                };
+                xxhr.send(gs_body);
+            }            
+        };
+        xhr.send();
+    }
+}
+</script>
+
+
+<!-- The form below is from activerecovery.com being used as an example -->
+<form class="front-page-form" id="front-page-form">
+	<input type="hidden" id="front-page-form-gacid">
+	    <div class="form-group">
+			<h4 class="front-page-form-heading">Lasting Relief From Severe Depression in 4-6 Weeks</h4>
+		</div>
+		<div class="form-group">
+			<!-- each id is listed with a matching one from var fields above to be sent to the sheet -->
+			<input type="text" name="front-page-form-your-name" id="first_name" placeholder="Your Name" class="form-control">
+		</div>
+		<div class="form-group">
+			<input type="text" name="front-page-form-your-email" id="email" placeholder="Your Email" class="form-control">
+			<input type="text" name="front-page-contact_me_by_fax_only" style="display:none !important" tabindex="-1" autocomplete="off">
+		</div>
+		<div class="form-group">
+			<input type="text" name="front-page-form-your-phone" id="phone" placeholder="Your Phone" class="form-control">
+		</div>
+		<div class="form-group">
+			<select class="form-control" id="front-page-form-select">
+				<option hidden disabled selected value>Interested In:</option>
+				<option value="Side effects of TMS">Side effects of TMS</option>
+				<option value="Insurance coverage for TMS">Insurance coverage for TMS</option>
+				<option value="TMS for myself or a loved one">TMS for myself or a loved one</option>
+				<option value="Scheduling a free consulation">Scheduling a free consulation</option>
+				<option value="Other">Other</option>
+			</select>
+		</div>
+		<div class="form-group">
+			<textarea id="front-page-form-textarea" class="front-page-form-textarea form-control" placeholder="Add more detail:"></textarea>
+		</div>
+						
+		<div>
+			<div class="g-recaptcha" data-sitekey="6Lf914sUAAAAAJOhcSm8zhjn9MhjHO-3WufMaRNo"></div>
+			<!-- onClick="submit_form()" is added to the button class in order to trigger the above script to send to sheets -->
+			<!-- the id="front-page-form-submission" sends to a js file which then sends to a php form to handle the emails -->
+				<button class="btn btn-primary front-page-form-button" id="front-page-form-submission" onClick="submit_form()">Book a free consultation</button>
+				    <p class="front-page-form-subtext front-page-form-margin-bottom">(We will not share, sell, or spam your email.)</p>
+					<p class="success front-page-form-submission-success">Your message was sent!</p>
+					<p class="error front-page-form-submission-error">Your message was not sent! Try again.</p>
+	    </div>
+</form>
