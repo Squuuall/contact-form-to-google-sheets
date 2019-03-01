@@ -33,7 +33,7 @@ Next click the 'Create Credentials' blue button and select API Key. Copy and sav
 
 You can choose to restrict the key so that only a certain website can access it. If you choose to restrict the key scroll down and then click HTTP Referrers and enter your site as *.yoursite.com/* and click Save.
 
-## Testing the Google Sheets API
+## Testing the Google Sheets API - NOT necessary but useful
 
 Open a new tab. Create a new google sheet or open an existing sheet. If creating a new sheet, enter some data into the fields. If the sheet already has data you can leave it as is.
 
