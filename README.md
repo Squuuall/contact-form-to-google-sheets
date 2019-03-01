@@ -37,7 +37,7 @@ You can choose to restrict the key so that only a certain website can access it.
 
 Open a new tab. Create a new google sheet or open an existing sheet. If creating a new sheet, enter some data into the fields. If the sheet already has data you can leave it as is.
 
-On the left side of the Developers Google page click on Library on the left side again. Search for Google Sheets. Click Google Sheets API then click 'Try This API'. Scroll down to sheets.spreadsheets.values.get and click that option. In the spreadsheetId paste the ID of your spreadsheet in the URL - the nonsensical text between slashes - we will also need this Sheet ID for later, copy and paste to your text document.
+On the left side of the Developers Google page click on Library on the left side again. Search for Google Sheets. Click Google Sheets API then click 'Try This API'. Scroll down to sheets.spreadsheets.values.get and click that option. In the spreadsheetId paste the ID of your spreadsheet in the URL - the nonsensical text between slashes - **we will also need this Sheet ID for later, copy and paste to your text document**.
 
 Range is set to the name of the sheet, by default it is Sheet1. For valueRenderOption select FORMATTED_VALUE. Click the blue button that says 'Authorize and execute', deselect all selection except for FORMATTED_VALUE, click Authorize and execute, select your email and click allow. Scroll down to see the sheet data listed as JSON data. Testing should be sucessful so far.
 
